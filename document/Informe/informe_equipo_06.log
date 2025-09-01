@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.12)  31 AUG 2025 23:00
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.12)  31 AUG 2025 23:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -419,99 +419,108 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 50
  (/usr/local/texlive/2023/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 63.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 66.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 63.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 66.
  (/usr/local/texlive/2023/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (33.16025pt too wide) in paragraph at lines 73--85
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (33.16025pt too wide) in paragraph at lines 76--88
  [][] 
  []
 
 <figures/revenueA.png, id=65, 671.50874pt x 473.77pt>
 File: figures/revenueA.png Graphic file (type png)
 <use figures/revenueA.png>
-Package pdftex.def Info: figures/revenueA.png  used on input line 100.
+Package pdftex.def Info: figures/revenueA.png  used on input line 103.
 (pdftex.def)             Requested size: 154.80157pt x 109.21782pt.
 <figures/timespentA.png, id=67, 671.50874pt x 473.77pt>
 File: figures/timespentA.png Graphic file (type png)
 <use figures/timespentA.png>
-Package pdftex.def Info: figures/timespentA.png  used on input line 102.
+Package pdftex.def Info: figures/timespentA.png  used on input line 105.
 (pdftex.def)             Requested size: 154.80157pt x 109.21782pt.
-<figures/GastoA.png, id=68, 1368.11125pt x 826.08624pt>
-File: figures/GastoA.png Graphic file (type png)
-<use figures/GastoA.png>
-Package pdftex.def Info: figures/GastoA.png  used on input line 117.
-(pdftex.def)             Requested size: 258.0pt x 155.78574pt.
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 117--118
- [][] 
- []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[1{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}
+ [1{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 
 pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.120 \end{figure}
-                  
+l.109 
+      ]
+<figures/GastoA.png, id=80, 1368.11125pt x 826.08624pt>
+File: figures/GastoA.png Graphic file (type png)
+<use figures/GastoA.png>
+Package pdftex.def Info: figures/GastoA.png  used on input line 120.
+(pdftex.def)             Requested size: 258.0pt x 155.78574pt.
+
+Overfull \hbox (6.0pt too wide) in paragraph at lines 120--121
+ [][] 
+ []
+
+[2
 pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.120 \end{figure}
-                   <./figures/revenueA.png> <./figures/timespentA.png>]
-<figures/21.png, id=84, 963.6pt x 542.025pt>
-File: figures/21.png Graphic file (type png)
-<use figures/21.png>
-Package pdftex.def Info: figures/21.png  used on input line 151.
-(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
-<figures/22.png, id=85, 963.6pt x 542.025pt>
-File: figures/22.png Graphic file (type png)
-<use figures/22.png>
-Package pdftex.def Info: figures/22.png  used on input line 153.
-(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
-<figures/23.png, id=86, 963.6pt x 542.025pt>
-File: figures/23.png Graphic file (type png)
-<use figures/23.png>
-Package pdftex.def Info: figures/23.png  used on input line 155.
-(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
-<figures/24.png, id=87, 963.6pt x 542.025pt>
-File: figures/24.png Graphic file (type png)
-<use figures/24.png>
-Package pdftex.def Info: figures/24.png  used on input line 157.
-(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
-<figures/25.png, id=88, 963.6pt x 542.025pt>
-File: figures/25.png Graphic file (type png)
-<use figures/25.png>
-Package pdftex.def Info: figures/25.png  used on input line 159.
-(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
-
-Underfull \vbox (badness 1817) has occurred while \output is active []
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [2
+l.183 
+      
 pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.194 
+l.183 
+       <./figures/revenueA.png> <./figures/timespentA.png> <./figures/GastoA.png>] [3]
+<figures/21.png, id=97, 963.6pt x 542.025pt>
+File: figures/21.png Graphic file (type png)
+<use figures/21.png>
+Package pdftex.def Info: figures/21.png  used on input line 295.
+(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
+<figures/22.png, id=98, 963.6pt x 542.025pt>
+File: figures/22.png Graphic file (type png)
+<use figures/22.png>
+Package pdftex.def Info: figures/22.png  used on input line 297.
+(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
+<figures/23.png, id=99, 963.6pt x 542.025pt>
+File: figures/23.png Graphic file (type png)
+<use figures/23.png>
+Package pdftex.def Info: figures/23.png  used on input line 299.
+(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
+<figures/24.png, id=100, 963.6pt x 542.025pt>
+File: figures/24.png Graphic file (type png)
+<use figures/24.png>
+Package pdftex.def Info: figures/24.png  used on input line 301.
+(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
+<figures/25.png, id=101, 963.6pt x 542.025pt>
+File: figures/25.png Graphic file (type png)
+<use figures/25.png>
+Package pdftex.def Info: figures/25.png  used on input line 303.
+(pdftex.def)             Requested size: 154.80157pt x 87.07314pt.
+
+Underfull \vbox (badness 2951) has occurred while \output is active []
+
+ [4
+pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.385 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.385 
       
 pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.194 
-      
-pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.194 
-       <./figures/GastoA.png> <./figures/21.png (PNG copy)> <./figures/22.png (PNG copy)> <./figures/23.png (PNG copy)> <./figures/24.png (PNG copy)> <./figures/25.png (PNG copy)>]
+l.385 
+       <./figures/21.png (PNG copy)> <./figures/22.png (PNG copy)> <./figures/23.png (PNG copy)> <./figures/24.png (PNG copy)> <./figures/25.png (PNG copy)>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -523,33 +532,28 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3
-pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.270 \end{document}
-                    
+[5
 pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.270 \end{document}
+l.412 \end{document}
                     ] (./informe_equipo_06.aux)
 Package rerunfilecheck Info: File `informe_equipo_06.out' has not changed.
 (rerunfilecheck)             Checksum: DF7B1817994179BF09ED82D8D90CD42C;2643.
  ) 
 Here is how much of TeX's memory you used:
- 11281 strings out of 476025
- 179076 string characters out of 5790016
+ 11285 strings out of 476025
+ 179107 string characters out of 5790016
  1883388 words of memory out of 5000000
- 31541 multiletter control sequences out of 15000+600000
- 552861 words of font info for 112 fonts, out of 8000000 for 9000
+ 31542 multiletter control sequences out of 15000+600000
+ 553376 words of font info for 114 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,9n,76p,996b,465s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on informe_equipo_06.pdf (3 pages, 480599 bytes).
+ 75i,12n,76p,1364b,439s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on informe_equipo_06.pdf (5 pages, 514495 bytes).
 PDF statistics:
- 163 PDF objects out of 1000 (max. 8388607)
- 117 compressed objects within 2 object streams
- 24 named destinations out of 1000 (max. 500000)
+ 182 PDF objects out of 1000 (max. 8388607)
+ 130 compressed objects within 2 object streams
+ 26 named destinations out of 1000 (max. 500000)
  145 words of extra memory for PDF output out of 10000 (max. 10000000)
 
