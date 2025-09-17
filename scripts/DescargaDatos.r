@@ -14,6 +14,7 @@
 # Clean environment and libraries
 rm(list = ls())
 
+# Libraries
 require(pacman)
 p_load(rvest, dplyr, tidyr, readr, httr, jsonlite)
 
