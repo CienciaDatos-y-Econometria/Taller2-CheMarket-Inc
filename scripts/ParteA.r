@@ -105,8 +105,6 @@ box_f_cat_rev <-  function(var_name) {
 lapply(names(db)[categoric_vars], box_f_cat_rev)
 
 
-
-
 #
 # Función: Boxplot + diferencia de medias
 box_f_cat_rev <- function(var_name) {
@@ -172,6 +170,150 @@ plots[[2]]
 plots[[3]]
 plots[[4]]
 # TODO: exportar
+
+
+##########?????
+
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(patchwork)
+library(RColorBrewer)
+
+# ==== 1) Bins y etiquetas ====
+db2 <- db %>%
+  mutate(
+    # <<CAMBIA AQUÍ si tu variable no se llama 'sign_up'>>
+    sign_up = sign_up,
+    sessions_bin = cut(past_sessions,
+                       breaks = c(-Inf, 4, 8, 14),
+                       labels = c("0-4","5-8","9-14"),
+                       right = TRUE),
+    time_bin = cut(time_spent,
+                   breaks = c(0, 6, 12, 18, 24, 30, 36, 42, 48, 55),
+                   labels = c("0-6","7-12","13-18","19-24","25-30","31-36","37-42","43-48","49-55"),
+                   include.lowest = TRUE, right = TRUE)
+  )
+
+# ==== 2) Paletas y orden EXACTOS ====
+# Device: desktop / mobile / tablet
+pal_device  <- c(desktop="#009E73", mobile="#0072B2", tablet="#E69F00")
+
+# SO: osx / other / windows
+pal_os      <- c(osx="#CC79A7", other="#0072B2", windows="#E69F00")
+
+# Binarias: 0 / 1
+pal_bin     <- c(`0`="#999999", `1`="#0072B2")
+
+# Sesiones: 0-4 / 5-8 / 9-14
+pal_sessions<- c("0-4"="#009E73", "5-8"="#0072B2", "9-14"="#E69F00")
+
+# Tiempo en página (9 categorías)
+pal_time <- setNames(
+  c("#0072B2","#E69F00","#009E73","#D55E00","#CC79A7",
+    "#F0E442","#56B4E9","#000000","#999999"),
+  ord_time
+)
+
+ord_device  <- c("desktop","mobile","tablet")
+ord_os      <- c("osx","other","windows")
+ord_bin     <- c(0,1)
+ord_sessions<- c("0-4","5-8","9-14")
+ord_time    <- c("0-6","7-12","13-18","19-24","25-30","31-36","37-42","43-48","49-55")
+
+# ==== 3) Función con estética del grupo ====
+bar_mean <- function(data, x, title, xlab, order, colors, decimals=1) {
+  x <- rlang::ensym(x)
+  df <- data %>%
+    filter(!is.na(!!x), !is.na(Revenue)) %>%
+    group_by(val = !!x) %>%
+    summarise(prom = mean(Revenue), .groups = "drop") %>%
+    mutate(val = factor(val, levels = order))
+  
+  y_top <- max(df$prom) * 1.12
+  
+  ggplot(df, aes(x = val, y = prom, fill = val)) +
+    geom_col(width = 0.78) +
+    geom_text(aes(label = sprintf(paste0("%.",decimals,"f"), prom)),
+              vjust = -0.45, fontface = "bold", size = 4.6) +
+    scale_fill_manual(values = colors, guide = "none") +
+    scale_y_continuous(limits = c(0, y_top), expand = expansion(mult = c(0, .02))) +
+    labs(title = title, x = xlab, y = "Gasto promedio") +
+    theme_classic(base_size = 14) +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+          axis.title.x = element_text(margin = margin(t = 6)))
+}
+
+# ==== 4) Gráficos individuales ====
+g_reg <- bar_mean(db2, sign_up, "Revenue según registro", "Registro", ord_bin, pal_bin) # <<y AQUÍ si cambias el nombre>>
+g_ret <- bar_mean(db2, is_returning_user, "Revenue según usuario recurrente", "Usuario Recurrente", ord_bin, pal_bin)
+g_os  <- bar_mean(db2, os_type, "Revenue según sistema operativo", "Sistema Operativo", ord_os, pal_os)
+g_dev <- bar_mean(db2, device_type, "Revenue según dispositivo", "Dispositivo", ord_device, pal_device)
+g_ses <- bar_mean(db2, sessions_bin, "Revenue según número de sesiones", "Número de sesiones", ord_sessions, pal_sessions)
+g_tim <- bar_mean(db2, time_bin, "Revenue según tiempo en página", "Tiempo en página", ord_time, pal_time)
+
+# ==== 5) Panel 3x2 como el de la imagen ====
+panel_prom <- (g_reg | g_ret) / (g_os | g_dev) / (g_ses | g_tim)
+panel_prom
+
+# (Opcional) guardar en buena resolución
+# ggsave("panel_promedios_like_compas.png", panel_prom, width = 12, height = 14, dpi = 300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##########?????
+
+
 
 
 # Categorics vs sign_up
