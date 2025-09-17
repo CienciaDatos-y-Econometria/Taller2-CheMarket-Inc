@@ -198,7 +198,7 @@ model <- lm(log_revenue ~ sign_up, data = db)
 # TODO exportar
 summary(model)
 
-# Controlling by all variables
+# Controlling by variables related to Revenue
 model_controlled <- lm(log(Revenue) ~ sign_up + sqrt_time_spent + past_sessions + 
                          device_type + is_returning_user + os_type, data = db)
 # TODO exportar
@@ -207,20 +207,7 @@ summary(model_controlled)
 # Controlar por interacciones entre vars fuertemente relacionadas a Revenue
 # TODO: Rev vs time y vs past_Sessions sube al principio y luego baja
 # Con device_type, os_type y sign_up no es tan claro; con returning_user si
-model_controlled_revenue <- lm(log(Revenue) ~ sign_up + time_spent + past_sessions +
-                                 device_type + is_returning_user + os_type +
-                                 time_spent:past_sessions + time_spent:is_returning_user +
-                                 past_sessions:is_returning_user,
-                                 data = db)
-summary(model_controlled_revenue)
 
-# Controlar por interacciones con vars fuertemente relacionadas a sign_up
-# TODO: sign vs device no parece tener (ver %'s), os_type si (ver %'s), 
-# faltaría ver continuas vs sign_up
-model_controlled_sign <- lm(log(Revenue) ~ sign_up + time_spent + past_sessions + 
-                              device_type + is_returning_user + os_type +
-                              sign_up:os_type, data = db)
-summary(model_controlled_sign)
 
 # Modelo final (quitando aquellas anteriores no significativas)
 
@@ -231,7 +218,8 @@ summary(model_controlled_sign)
 # -----------------------------------------------------
 
 # Quitamos revenue del set de variables explicativas
-vars <- setdiff(names(db), c("sign_up", "revenue"))
+# Falta justificar past_sessions, sqrt_time_spent
+vars <- setdiff(names(db), c("sign_up", "Revenue", "log_revenue", "time_spent", "validacion"))
 
 # Fórmula dinámica
 fml <- as.formula(paste("sign_up ~", paste(vars, collapse = " + ")))
@@ -245,8 +233,6 @@ summary(logit_model)
 # Odds ratios en vez de coeficientes logit
 exp(coef(logit_model))
 
-# Intervalos de confianza de los odds ratios
-exp(confint(logit_model))
 
 # -----------------------------------------------------
 # 4) Evaluating model's predictive capacity
@@ -267,29 +253,30 @@ db$validacion[validacion_ids] <- 1
 data_test <- db %>% filter(validacion == 1)
 data_train <- db %>% filter(validacion == 0)
 
-# Crear parámetros y función k-fold
-k <- 10
-folds_i <- sample(rep(1:k, length.out = nrow(db)))
-
 # Poner variables a los modelos para data_train
 #TODO
+
 models <- list(
-  c("sign_up"),
-  c("sign_up", "time_spent"),
-  c("sign_up", "time_spent", "past_sessions")
+  "sign_up", # Básico
+  "sign_up + sqrt_time_spent + past_sessions + device_type + is_returning_user + os_type", # Todas variables
+  "sign_up + sqrt_time_spent + past_sessions + device_type + is_returning_user + os_type +
+   sign_up:past_sessions + sign_up:os_type + sign_up:device_type + sign_up:is_returning_user", # Interacciones
+  "sign_up + sqrt_time_spent + past_sessions + device_type + is_returning_user + os_type +
+   sign_up:past_sessions + sign_up:os_type + sign_up:device_type + sign_up:is_returning_user + # Interacciones
+   sqrt_time_spent*sqrt_time_spent"
 )
 
+
+
 predictor<-function(regresors){
-  fmla<- formula(paste0("log(Revenue)",regresors))
+  fmla<- formula(paste0("log_revenue ~ ",regresors))
   model <- lm(fmla,data = data_train)
   prediction_test <- predict(model, newdata = data_test)
-  mse<-with(data_test,mean((log(Revenue)-prediction_test)^2))
+  mse<-with(data_test,mean((log_revenue-prediction_test)^2))
   return(mse)
 }
 
+
 # Sacar MSE para los 
 lapply(models, predictor)
-
-
-
 
