@@ -11,18 +11,34 @@
 # -----------------------------------------------------
 # 1) Build the regression tree
 # -----------------------------------------------------
-library(rpart)
-library(rpart.plot)
 
-# Fit the regression tree model
+# Fit the regression tree model (rpart)
 set.seed(123)
-modelo_arbol <- rpart(revenue ~ ., data = parte_a, method = "anova")
+modelo_arbol <- rpart(Revenue ~ ., data = parte_a, method = "anova")
+
+# Tree model (Caret)
+fitControl<-trainControl(method ="cv", number=5)
+
+set.seed(123)
+
+tree_rpart2 <- train(
+  formula_tree,
+  data=data_train,
+  method = "rpart2",
+  trControl = fitControl,
+  tuneGrid = expand.grid(maxdepth = seq(1,8,1))
+)
 
 
 # -----------------------------------------------------
 # 2) Diagram the model
 # -----------------------------------------------------
+
+# Rpart
 rpart.plot(modelo_arbol)
+
+# Caret
+
 
 # -----------------------------------------------------
 # 3) Evaluate MSE of the model
