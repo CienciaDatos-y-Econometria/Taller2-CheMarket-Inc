@@ -17,7 +17,7 @@ rm(list = ls())
 # Libraries
 require(pacman)
 p_load(glmnet, caret, recipes, tibble, rvest, rpart, rpart.plot,
-       dplyr, tidyr, readr, httr
+       dplyr, tidyr
 )
 
 # -----------------------------------------------------
