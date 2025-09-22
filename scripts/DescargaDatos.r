@@ -16,13 +16,16 @@ rm(list = ls())
 
 # Libraries
 require(pacman)
-p_load(rvest, dplyr, tidyr, readr, httr, jsonlite)
-
+p_load(glmnet, caret, recipes, tibble, rvest, rpart, rpart.plot,
+       dplyr, tidyr, readr, httr
+)
 
 # -----------------------------------------------------
 # PART A
 # -----------------------------------------------------
 
+# TODO: Adrian 
+# C:/Users/Asuar/OneDrive/Escritorio/Libros Clases/Economía/Ciencia Datos y Econometria/Taller2-CheMarket-Inc
 
 # Load data for part A and b (relative path)
 parte_a <- readRDS("stores/Parte_A.Rds")
