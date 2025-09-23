@@ -222,6 +222,8 @@ ggplot(db, aes(x = factor(is_returning_user), y = cate_pred, fill = factor(is_re
 
 ggsave("Boxplot_CATE_UsuarioRecurrente.jpg", 
        width = 12, height = 8, dpi = 300)
+# El hecho que se crucen los boxplot, indica que si hay subgrupos, los cuales vamos a observar con la diferencia entre grupos, para ello 
+# primero sacamos todas las posibles combinaciones y a partir de ahi señalamos si hay diferencias
 
 # Conocer todas las interacciones posibles
 vars <- c("time_spent", "past_sessions", "device_type", "os_type", "is_returning_user")
@@ -332,7 +334,7 @@ tau_hat_summ_5 <- db |>
   )
 
 efectotratamiento_5 <- ggplot(tau_hat_summ_5) + 
-  geom_point(aes(x = past_sessions, y = tau_hat, color = device_type)) + 
+  geom_point(aes(x = past_sessions, y = tau_hat, color = device_type), size=3) + 
   labs(x = "Sesiones Pasadas", 
        y = "Efecto del Tratamiento Estimado", 
        color = "Tipo de Dispositivo") +
@@ -351,7 +353,7 @@ tau_hat_summ_6 <- db |>
   )
 
 efectotratamiento_6 <- ggplot(tau_hat_summ_6) + 
-  geom_point(aes(x = past_sessions, y = tau_hat, color = os_type)) + 
+  geom_point(aes(x = past_sessions, y = tau_hat, color = os_type), size=3) + 
   labs(x = "Sesiones Pasadas", 
        y = "Efecto del Tratamiento Estimado", 
        color = "Sistema Operativo") +
@@ -370,7 +372,7 @@ tau_hat_summ_7 <- db |>
   )
 
 efectotratamiento_7 <- ggplot(tau_hat_summ_7) + 
-  geom_point(aes(x = past_sessions, y = tau_hat, color = is_returning_user)) + 
+  geom_point(aes(x = past_sessions, y = tau_hat, color = is_returning_user), size=3) + 
   labs(x = "Sesiones Pasadas", 
        y = "Efecto del Tratamiento Estimado", 
        color = "Usuario Recurrente") +
