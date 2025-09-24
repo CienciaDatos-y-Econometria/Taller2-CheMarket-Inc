@@ -5,7 +5,6 @@
 require(pacman)
 p_load(rpart, dplyr, rpart.plot, caret, vtable, devtools, stargazer, causalTree, grf)
 
-setwd("/Users/gianlucacicco/Desktop/2025-2/Ciencia de Datos/Taller 1")
 db <- readRDS("/Users/gianlucacicco/Desktop/2025-2/Ciencia de Datos/Taller 1/Parte_B.Rds")
 setwd("/Users/gianlucacicco/Desktop/2025-2/Ciencia de Datos/Taller 2")
 

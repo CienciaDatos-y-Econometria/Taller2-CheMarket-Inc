@@ -12,6 +12,7 @@
 \usepackage{float}
 \usepackage{moresize}
 \usepackage{booktabs}
+\usepackage[para,online,flushleft]{threeparttable}
 
 
 \makeatletter
@@ -28,7 +29,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{¿Quién gasta más y quién se registra? Evidencia observacional en CheMarket}
+\title{Profundizando el análisis de \textit{CheMarket Inc.}}
 
 \author{%
 \IEEEauthorblockN{Adrián Arturo Suárez García}
@@ -42,6 +43,14 @@
 \IEEEauthorblockN{Gabriel Alejandro Moreno Riveros}
 \IEEEauthorblockA{202014583\\
 \href{mailto:g.morenor@uniandes.edu.co}{\texttt{g.morenor@uniandes.edu.co}}}
+\linebreakand
+\IEEEauthorblockN{Gianluca Cicco}
+\IEEEauthorblockA{202020881\\
+\href{mailto:g.cicco@uniandes.edu.co}{\texttt{g.cicco@uniandes.edu.co}}}
+\and
+\IEEEauthorblockN{Juan Sebastián Sierra}
+\IEEEauthorblockA{202020881\\
+\href{mailto:j.sierrat@uniandes.edu.co}{\texttt{j.sierrat@uniandes.edu.co}}}
 }
 
 
@@ -50,27 +59,21 @@
 
 
 \section{Introducción}
-A través de este informe, nuestro grupo de economistas y científicos de datos emplea diferentes técnicas de análisis estadístico y de machine learning para estudiar el comportamiento de los usuarios en \textbf{CheMarket Inc.} En particular, nos enfocamos en entender qué variables impulsan el revenue de la compañía, con el fin de generar evidencia que apoye la toma de decisiones estratégicas informadas.
-
-El análisis se divide en dos partes complementarias. En la primera parte, trabajamos con datos observacionales para explorar patrones en el comportamiento de los usuarios: ¿quiénes gastan más?, ¿qué factores están asociados con el registro en la plataforma?, ¿qué variables ayudan a predecir el gasto individual? A partir de regresiones y modelos predictivos evaluamos si existe una diferencia sistemática en el gasto entre usuarios registrados y no registrados, y discutimos posibles sesgos que afectan la interpretación causal.
-
-En la segunda parte, analizamos un experimento aleatorio en el que se facilitó el proceso de registro para un grupo de usuarios. Esta intervención nos permite estimar de manera más rigurosa el efecto del registro sobre el gasto, así como evaluar la efectividad del nuevo diseño en incrementar la tasa de registros. Finalmente, reflexionamos sobre la validez de los resultados, las limitaciones del experimento y presentamos recomendaciones concretas sobre si conviene escalar esta intervención.
-
-En particular, encontramos que si bien existe una correlación entre registro y el aumento del gasto de los usuarios, no se puede inferir causalidad a partir de esta relación, ya que hay factores, tanto observables como no observables que están afectando directamente el ingreso, o de manera indirecta a través de la probabilidad de registro. Asimismo, consideramos que una interfaz más rápida para el registro aumenta la probabilidad de registro y el gasto de los usuarios, sin embargo, se debe ser cuidadosos con estos hallazgos ya que hay separación perfecta al estimar el registro en función de la interfaz,
- lo que puede hacer invalido extrapolar estos hallazgos, y sugiere un problema de diseño del experimento. Nuestra recomendación en particular es de no escalar este experimento.
+A través de este informe, nuestro grupo de economistas y científicos de datos emplea nuevas técnicas de análisis estadístico y de machine learning para 
+descubrir relaciones no lineales y efectos heterogéneos en el comportamiento de los usuarios en \textbf{CheMarket Inc.} En particular, nos enfocamos en entender qué variables impulsan el revenue de la compañía, con el fin de generar evidencia que apoye la toma de decisiones estratégicas informadas.
 
 \section{Datos observacionales: ¿Qué impulsa las ventas?}
 
 \subsection{Datos y preparación}
 
-Para el análisis observacional, contamos con un conjunto de $100.000$ observaciones históricas de los usuarios de CheMarket. Las variables disponibles son $\texttt{time\_spent}$: tiempo en el sitio durante la sesión, $\texttt{past\_sessions}$: número de sesiones anteriores, 
+Para el análisis observacional, al igual que en nuestro primer informe contamos con un conjunto de $100.000$ observaciones históricas de los usuarios de CheMarket. Las variables disponibles son $\texttt{time\_spent}$: tiempo en el sitio durante la sesión, $\texttt{past\_sessions}$: número de sesiones anteriores, 
 $\texttt{device\_type}$: tipo de dispositivo (móvil, escritorio, tablet), $\texttt{os\_type}$: sistema operativo (OS X, Windows, otros), $\texttt{is\_returning\_user}$: si el usuario ya había visitado antes, $\texttt{sign\_up}$: si se registró o no y $\texttt{revenue}$: cuanto gastó en cada sesión.
 
 En la siguiente tabla se presentan las estadísticas descriptivas de estas variables.
 
 
 \begin{table}[H]
-\ssmall
+\tiny
 \centering
 \caption{Estadísticas descriptivas de las variables}
 \begin{tabular}{|l|c|c|c|c|c|c|}
@@ -91,322 +94,261 @@ Estadísticas descriptivas de las variables numéricas y cantidad por clase para
 
 \end{table}
 
-En la siguiente figura se presentan las distribuciones originales de \texttt{Revenue} y \texttt{time\_spent}.
-Se puede observar que la densidad de ambas variables muestra muchos valores pequeños y pocos muy grandes.
-Para nuestro análisis decidimos aplicar una transformación logarítmica y de raíz cuadrada respectivamente,
-ya que estas transformaciones comprimen la cola y acercan la distribución a algo más gaussiano, 
-lo que beneficia métodos lineales y tests que asumen normalidad de errores.
+Aquí dividimos la base en entrenamiento (70\%) y validación (30\%) y transformamos la variable objetivo a logartimico (log\_revenue) para estabilizar la dispersión. Luego, enumeramos todas las variables que el modelo puede usar y, en algunos casos incluimos transformaciones simples o interacciones como en nuestro primer informe. 
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\textwidth]{figures/revenueA.png}
+\subsection{Regresiones Lineales}
 
-    \includegraphics[width=0.3\textwidth]{figures/timespentA.png}
-    \caption{Distribución de \texttt{Revenue} y \texttt{time\_spent}}
-    \label{fig:distribucion}
-\end{figure}
+Vamos a evaluar, un modelo lineal clásico (OLS) y para mejorar la predicción y evitar posibles sobreajustes, usamos además dos variantes: Ridge y Lasso.  Ambos agregan un término de penalización. Ridge añade una penalización L2 (cuadrada) a la magnitud de los coeficientes, mientras Lasso usa una penalización L1 (valor absoluto). Para elegir la fuerza de esa penalización (el hiperparámetro $\lambda$) utilizamos validación cruzada en datos de entrenamiento. Entonces seleccionamos dos candidatos: $\lambda_{min}$, que minimiza el MSE medio, y además $\lambda_{1se}$, que es el valor más grande de $\lambda$ cuyo error sigue estando dentro de una desviación estándar del mínimo, pues permite escoger el modelo más sencillo (menor sobreajuste) sin sacarificar en gran medida la exactitud.
 
-
-
-\subsection{Estimación del efecto de registrarse sobre el gasto}
-
-En este caso queremos analizar el efecto de registrarse sobre el gasto de los usuarios. 
-Sin embargo, es importante tener en cuenta que la relación entre estas variables puede estar influenciada por otras variables de nuestro modelo, 
-en particular, en el siguiente gráfico presentamos como cambia el gasto dentro de diferentes clases de usuarios.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{figures/GastoA.png}
-    \caption{Gasto promedio por clase de usuario}
-    \label{fig:coefplot}
-\end{figure}
-
-Queremos tener esto en cuenta ya que estimar de manera ingenua el efecto del registro sobre el gasto podría llevar a conclusiones erróneas.
-Por ejemplo, si observamos que los usuarios registrados tienden a gastar más, esto podría deberse a que otras variables los hicieron registrarse, y puede que estas variables también
-estén teniendo un efecto sobre el gasto.
-
-
-Teniendo conocimiento de nuestro datos pasamos a estimar el efecto promedio del registro de los usuarios sobre el ingreso total de la compañía, 
-para esto usamos diferentes métodos de machine learning. La primera estimación consiste en estimar el efecto promedio puro sin incluir variables de control, en la segunda incluimos las variables pertinentes considerando
- la posible correlación que exista entre estas y el ingreso, o también entre estas y el registro.
-
- \begin{align*}
-\textbf{M1:} \quad \log(\text{ingreso}) 
-  &= \beta_{0} + \beta_{1}\,\text{registro} + \varepsilon \\[1em]
-\textbf{M2:} \quad \log(\text{ingreso}) 
-  &= \beta_{0} + \beta_{1}\,\text{registro} \\
-     &+ \beta_{2}\,\sqrt{\text{tiempo en página}}\\
-     &+ \beta_{3}\,\text{número de sesiones} \\
-  &\quad + \beta_{4}\,\text{tipo dispositivo}\\
-     &+ \beta_{5}\,\text{usuario recurrente}\\
-     &+ \beta_{6}\,\text{sistema operativo}\\
-     &+ \varepsilon \\
-\end{align*}
 
 \begin{table}[H]
-\ssmall
+\caption{Comparación de modelos predictivos}
 \centering
-\begin{tabular}{l c c}
+\begin{tabular}[t]{l|l|l|l}
 \hline
-\textbf{Variable} & \textbf{Coeficiente estimado M2} & \textbf{Coeficiente estimado M1} \\
+Modelo & MSE & RMSE & R²\\
 \hline
-Intercepto                 & 0.577  & 1.1405 \\
-Registro (sign\_up = 1)     & 0.034 & 0.102 \\
-Raíz cuadrada del tiempo en sitio & 0.241 &  \\
-Sesiones pasadas            & 0.078 & \\
-Dispositivo: Escritorio     & 0.081 & \\
-Dispositivo: Móvil          & -0.102 & \\
-Usuario recurrente          & -0.103 & \\
-Sistema Operativo: OSX      & 0.049 & \\
-Sistema Operativo: Windows  & 0.009 & \\
+LM Básico & 0.2840 & 0.5329 & 0.0057\\
 \hline
+LM Todas & 0.1985 & 0.4455 & 0.3050\\
+\hline
+LM Interacciones & 0.1983 & 0.4453 & 0.3058\\
+\hline
+Ridge ($\lambda_{min}$) & 0.1984 & 0.4455
+($\lambda = 0.025197$) & 0.3051\\
+\hline
+Ridge ($\lambda_{1se}$) & 0.1991 & 0.4462
+($\lambda = 0.058207$) & 0.3030\\
+\hline
+Lasso ($\lambda_{min}$) & 0.1983 & 0.4453
+($\lambda = 0.000311$) & 0.3058\\
+\hline
+Lasso ($\lambda_{1se}$) & 0.1987 & 0.4457
+($\lambda = 0.008847$) & 0.3043\\
 \end{tabular}
-
-\hfill \break
-Coeficientes estimados del modelo lineal para \texttt{log(Revenue)}
 \end{table}
 
+La Tabla II muestra primero que el LM Básico rinde claramente peor, lo que confirma que el gasto es fuertemente condicional en las otras variables. Al incluir covariables (tiempo en el sitio transformado, sesiones previas, dispositivo, usuario recurrente y sistema operativo), el desempeño mejora sustancialmente y LM Interacciones apenas mejora un poco más. Cuando pasamos a Ridge y Lasso, los resultados quedan prácticamente empatados con LM Interacciones (MSE/RMSE bastante similares). Estas relaciones se deben a que con pocas variables y relaciones bastante lineales, OLS ya capta todo el efecto y la regularización no mejora mucho la predicción fuera de muestra.
 
+\subsection{Árboles de Clasificación y Regresión (CART)}
 
-
-Es importante mencionar que en estas estimaciones se usa como base del modelo “tablet” para tipo dispositivo 
-y “otro” para tipo sistema operativo.
- 
-Al estimar el primer modelo encontramos que, en promedio, el aumento de una unidad de registro incrementa en un $0.102$
- el logaritmo del ingreso para la compañía. Esto implica un aumento bastante significativo. No obstante, cuando, controlamos por las demás variables, este aumento promedio pasa a ser $0.034$, mucho menor, aproximadamente de de  $3.5$ puntos porcentuales en el revenue. Esto claramente indica que si existe una correlación entre el registro de los usuarios y su gasto, pero no necesariamente una causalidad, dado que el efecto es muy débil. Continuando con nuestra investigación, encontramos que casi el $80\%$ de los usuarios está registrado, y entendemos que un negocio de venta en línea requiere que las personas registren sus datos para enviar los productos, 
- además de implicar que gasten tiempo en la página. Por esto, existen variables omitidas respecto a la verdadera intención de gastar. No se gasta más por registrarte, el usuario se registra porque tiene intención de gastar. De hecho, también se observa una diferencia de 0,4 puntos más en gasto promedio si la persona emplea un sistema operativo de Apple, lo cual da indicios de una fuerte variable omitida, el ingreso. Si la persona tiene un celular alta gama, su ingreso puede ser mayor, por lo cuál gasta más, y se registra para gastar.
-
- Con esto en mente, desarrollamos un modelo para estimar qué variables afectan más el registro de los usuarios. El punto clave es buscar profundizar en nuestro informe para mejorar la comprensión del negocio respecto a su página web,
- 
- si hay alta correlación entre el registro y el gasto, podemos ver qué variables afectan directamente el gasto y cuales lo hacen mediante el registro. Así, estimamos el modelo: 
-
-
-\[
-\Pr(\text{registro} = 1 \mid X) \;=\; \frac{\exp(X\beta)}{1 + \exp(X\beta)}
-\]
-
-con
-\begin{align*}
-    X\beta & = \beta_0 \\
-    & + \beta_1 \sqrt{\text{tiempo en página}} \\
-    & + \beta_2 \,\text{número de sesiones} \\
-    & + \beta_3 \,\text{tipo dispositivo} \\
-    & + \beta_4 \,\text{usuario recurrente} \\
-    & + \beta_5 \,\text{ sistema operativo} \\
-    & + \varepsilon.
-\end{align*}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{l c}
-\hline
-\textbf{Variable} & \textbf{Coeficiente} \\
-\hline
-Intercepto             & 1.183951 \\
-Sesiones pasadas       & 1.133554 \\
-Dispositivo: Escritorio & 0.957080 \\
-Dispositivo: Móvil      & 1.106124 \\
-Sistema Operativo: OSX  & 1.077781 \\
-Sistema Operativo: Windows & 1.021961 \\
-Usuario recurrente      & 1.321484 \\
-Raíz cuadrada del tiempo en sitio & 1.199510 \\
-\hline
-\end{tabular}
+Si nos basamos en lo anterior, sabemos las regresiones lineales (OLS, Ridge y Lasso) ofrecían desempeños muy parecidos. Por lo tanto, si queremos evaluar posibles mejoras en el MSE/RMSE es pertinente evaluar patrones no lineales e interacciones que modelos lineales no identifican de manera apropiada. En este orden de ideas, vamos a comprobar si un árbol de regresión (CART) mejora la predicción fuera de muestra y, de paso, ofrece reglas que nos ayuden a entender subgrupos de usuarios con niveles de gasto distinto.
 
 \hfill \break
 
-Coeficientes estimados del modelo logístico para \texttt{sign\_up}
-
-\end{table}
-
-Los resultados de este modelo confirman nuestra hipótesis. Concretamente, se encontró que la probabilidad de registro aumenta $32$\% si la persona ha entrado previamente (por cada sesión pasada, la probabilidad de registro aumenta $13$\% en promedio), así como por cada minuto extra en la aplicación aumenta en promedio hasta $20$\% la probabilidad de registro. Esto nos dice que el registro está fuertemente influenciado por cuánto tiempo pasan las personas en la aplicación y cuántas veces han vuelto; es decir, si una persona es recurrente, si pasa mucho tiempo en la app, seguramente se registra para poder comprar. 
-
-
-\subsection{Capacidad predictiva del modelo}
-
-Para analizar la capacidad predictiva del modelo, dividimos nuestro dataset en un conjunto de entrenamiento y otro de validación, usando un split $70/30$, y la semilla $2025$ para asegurar la reproducibilidad.
-
-Para esto, conociendo las interacciones de nuestras variables respecto al gasto de los usuarios, desarrollamos diversos modelos predictivos. El objetivo de desarrollar varios modelos es buscar la complejidad ideal de balance entre sesgo y varianza, es decir, que relacione las variables tal que se ajuste bien a los datos, pero no adopte completamente el ruido blanco de la muestra.
-
-\begin{align*}
-\textbf{M1 (básico):}\quad &\\
-\log(\text{ingreso}) \;=\;& \; \beta_0 \nonumber \\
-&+ \beta_1 \,\text{registro} \nonumber \\
-&+ \varepsilon \\[1em]
-%
-\textbf{M2 (controles):}\quad &\\
-\log(\text{ingreso}) \;=\;& \; \beta_0 \nonumber \\
-&+ \beta_1 \,\text{registro} \nonumber \\
-&+ \beta_2 \,\sqrt{\text{tiempo en página}} \nonumber \\
-&+ \beta_3 \,\text{número de sesiones} \nonumber \\
-&+ \beta_4 \,\text{tipo dispositivo} \nonumber \\
-&+ \beta_5 \,\text{usuario recurrente} \nonumber \\
-&+ \beta_6 \,\text{sistema operativo} \nonumber \\
-&+ \varepsilon \\[1em]
-%
-\textbf{M3 (interacciones):}\quad &\\
-\log(\text{ingreso}) \;=\;& \; \beta_0 \nonumber \\
-&+ \beta_1 \,\text{registro} \nonumber \\
-&+ \beta_2 \,\sqrt{\text{tiempo en página}} \nonumber \\
-&+ \beta_3 \,\text{número de sesiones} \nonumber \\
-&+ \beta_4 \,\text{tipo dispositivo} \nonumber \\
-&+ \beta_5 \,\text{usuario recurrente} \nonumber \\
-&+ \beta_6 \,\text{sistema operativo} \nonumber \\
-&+ \beta_7 \,(\text{registro} \times \text{número de sesiones}) \nonumber \\
-&+ \beta_8 \,(\text{registro} \times \text{sistema operativo}) \nonumber \\
-&+ \beta_9 \,(\text{registro} \times \text{tipo dispositivo}) \nonumber \\
-&+ \beta_{10} \,(\text{registro} \times \text{usuario recurrente}) \nonumber \\
-&+ \varepsilon
-\end{align*}
-
-Validamos la capacidad de predicción de nuestros modelos calculando el cuadrado del error, 
-que es una medida de la diferencia promedio entre la predicción del modelo y el valor real. 
-Los resultados fueron: $0.2839$, $0.1984$ y $0.1982$. Esto nos indica que al inducir los controles minimizamos el error, es decir,
- nuestra predicción mejora, pero inducir complejidad mediante interacciones ya no mejora significativamente. 
- Incluso se introdujeron relaciones cuadráticas y no tuvo efecto alguno. 
-
+\subsubsection{Profundidad por Iteraciones}
 
 \subsection{Recomendación preliminar}
 
 
-Basados en los hallazgos anteriores, la evidencia estadística en este informe muestra que no existen indicios de causalidad 
-entre el registro y el gasto de cada usuario, por lo que no recomendamos realizar un experimento para confirmarla. Consideramos que hay variables omitidas, como el salario de los usuarios, o el tiempo que pasan en la aplicación, que son más efectivos para aumentar el ingreso. 
-Invertir en programas de marketing que se enfoquen en audiencias específicas, o diseñar la página para aumentar la retención de los usuarios, registrados o no, son usos más efectivos de los recursos de la compañía.
+En este caso, vamos a entrenar un CART de regresión, usando validación cruzada y un rango de profundidades $(1,\dots,10)$, en donde iterativamente vamos a generar un arbol para cada profundidad dentro del rango y luego calculamos el error de validación promedio; escogemos la profundidad con mejor desempeño y en cada iteración elige la variable que más reduce el error dentro de las ramas. Puesto que, la profundidad en un arbol controla la complejidad del modelo; arboles más profundos capturan más detalles, pero pueden sobreajustar; arboles menos profundos generalizan mejor pero pueden quedarse cortos. Con validación cruzada buscamos un punto intermedio que mejor predice fuera de muestra. Con nuestros datos, el optimo fue 4. 
+En la siguiente figura se muestra este arbol con sus subgrupos de decisión.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/arbol\_profundidad.png}
+    \caption{Árbol de regresión con profundidad 4}
+    \label{fig:arbol_profundidad}
+\end{figure}
+
+Viendo el arbol, se ve que el primer nodo aparece la raíz del tiempo con un umbral cercano a 2.2. Al estar en la parte superior, indica que para predecir el gasto, el modelo primero separa a los usuarios
+ según su tiempo en el sitio. Además, la relación no es lineal: a mayor tiempo en el sitio, mayor es el efecto sobre el gasto. Si vemos la rama izquierda, para los usuarios de poco tiempo en el sitio,
+  el tipo de dispositivo ayuda mucho a distinguir el gasto esperado. Eso quiere decir, que los usuarios de paso rápido no se comportan igual en móvil que en desktop/Tablet. Por otro lado, la rama derecha, exhibe que para las personas que pasan mas tiempo en sitio, el historial de sesiones marca claras diferencias en el gasto.
+   Para los usuarios con el mayor número de sesiones previas ($>4$), conviene distinguir entre sistema operativo (os\_type), y es evidente que conviene optimizar la experiencia para dispositivo con Os, pues tienen el mayor gasto esperado en este nodo.
+
+  \subsubsection{Pruning (poda) para profundidad}
+
+  A diferencia del método anterior, en donde controlando ex ante su tamaño, vamos a dejar el árbol completo y luego lo vamos a ir simplificando mediante pruning (poda) para evitar sobreajuste. Para ello definimos la ecuacion de costo de complejidad:
+ $C_{\alpha}(T) = \text{Error}(T) + \alpha |T|$.
+
+Donde \textit{Error}(T) resume el error cuadrático en las hojas y 
+$|T|$ es cuántas hojas usamos.
+
+El parámetro $\alpha$ (cp) es la penalización por complejidad, que funciona como un umbral mínimo de mejora en el error; cada posible división se acepta solo si reduce el error de predicción en más de cp; de lo contrario, esa rama se elimina. La idea, es ir podando con un cp fijo hasta encontrar el arbol que optimiza el costo de complejidad.
+
+No obstante, para determinar este hiperparametro(cp) utilizamos validación cruzada 10-fold y con un rango de valores ( de $0.00001$ a $0.0001$). Probamos todos esos valores de cp, y nos quedamos con el que mejor predice fuera de muestra.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/arbol\_complejidad.png}
+    \caption{Árbol de regresión con pruning por complejidad}
+    \label{fig:arbol_complejidad}
+
+\end{figure}
+
+
+Como en el árbol previo, la primera división está en la variable sqrt\_time\_spent, confirmando que el tiempo en el sitio es el predictor más relevante. A partir de ahí, el árbol sigue manteniendo la jerarquía global de manera general ( Tiempo – Sesiones - Dispositivos/OS), lo cual implica consistencia entre los métodos para plantear las  políticas. Sin embargo, a diferencia del método anterior, el pruning por complejidad recorta las divisiones que no mejoran la predicción y permite mayor complejidad donde si es necesario. De ahí que, el arbol queda mas profundo(Depth=6) donde la adición de esta variable si mejora la predicción del modelo. De ahí que, a gente que pasa más tiempo en el sitio y acumula más sesiones ($\geq 4$), no solo conviene distinguir entre sistema operativo (os\_type) sino que también importa el tipo de dispositivo (device\_type); dentro de este grupo también conviene distinguir según móvil o desktop ,lo cual es crucial porque en esas ramas están los usuarios con mayor gasto esperado Pero si el grupo, debería enfocarse en un solo grupo, debería ser los usuarios que pasen mas tiempo en sitio y  acumulan mas de 4 sesiones y que tengas sistema operativo OSX (predicción mas alta de gasto 2.48)
+
+\subsubsection{Analisis conjunto}
+
+
+\begin{table}[H]
+\caption{Comparación de modelos predictivos}
+\centering
+\begin{tabular}[t]{l|l|l|l}
+\hline
+Modelo & MSE & RMSE & R²\\
+\hline
+LM Básico & 0.2840 & 0.5329 & 0.0057\\
+\hline
+LM Todas & 0.1985 & 0.4455 & 0.3050\\
+\hline
+LM Interacciones & 0.1983 & 0.4453 & 0.3058\\
+\hline
+Ridge ($\lambda_{min}$) & 0.1984 & 0.4455
+($\lambda = 0.025197$) & 0.3051\\
+\hline
+Ridge ($\lambda_{1se}$) & 0.1991 & 0.4462
+($\lambda = 0.058207$) & 0.3030\\
+\hline
+Lasso ($\lambda_{min}$) & 0.1983 & 0.4453
+($\lambda = 0.000311$) & 0.3058\\
+\hline
+Lasso ($\lambda_{1se}$) & 0.1987 & 0.4457
+($\lambda = 0.008847$) & 0.3043\\
+\hline
+Árbol (Profundidad) & 0.1256 & 0.3544
+(maxdepth = 5) & 0.5602\\
+\hline
+Árbol (Complejidad) & 0.1228 & 0.3504
+(cp = 0.000060) & 0.5701\\
+\hline
+\end{tabular}
+\end{table}
+
+
+Viendo la tabla comparativa, el mejor desempeño predictivo lo entrega el árbol con poda por complejidad (cp alrededor de  0.000060) con MSE = 0.1228, RMSE = 0.3504 seguido muy de cerca por el árbol optimizado por profundidad (maxdepth = 5) con MSE = 0.1256 y  RMSE = 0.3544 . Esta caída del error fuera de muestra a comparación de los modelos lineales, confirma que en nuestros datos había no linealidades y umbrales (tiempo en el sitio, 3 y 4 sesiones, OS/dispositivo) que la forma lineal no capturaba; el árbol, en cambio, las traduce en reglas por segmentos y por eso predice mejor.
 
 
 \section{Datos experimentales: ¿Funciona facilitar el registro?}
 
-\subsection{Verificación del experimento}
+En esta segunda parte evaluamos el efecto causal de facilitar el registro (sign\_up) sobre el gasto de los usuarios de CheMarket Inc., aprovechando el diseño experimental de la base de datos.
+Nuestro objetivo es estimar el impacto promedio y explorar heterogeneidad de efectos entre distintos perfiles de usuario.
 
-Se implementó un cambio en el diseño del sitio para facilitar el proceso de registro. 
-Esta intervención fue asignada aleatoriamente a algunos usuarios, lo que permite evaluar su impacto sobre el gasto 
-como un experimento de manera más rigurosa.
+\subsection{Datos y preparación}
 
-Queremos ver si el experimento fue bien implementado, es decir, si los grupos de control y tratamiento son comparables en términos de características observables.
+Partimos de la misma base experimental usada en el Taller 1, con 10,000 observaciones y variables:
+sign\_up (tratamiento), time\_spent, past\_sessions, device\_type, os\_type, is\_returning\_user y revenue.
+Transformamos la variable de resultado a logaritmo natural (ln\_revenue) para estabilizar la varianza.
 
-Para ello, se realizó un análisis de balance entre el grupo de tratamiento y el de control. Para las variables continuas se aplicaron pruebas $t$ de diferencias de medias, mientras que para las categóricas se emplearon pruebas de Chi-cuadrado ($\chi^2$), además de comprobar de manera gráfica.
-En la siguiente figura se muestran las medias de las diferentes covariables entre los grupos de tratamiento y control. Posteriormente, se muestran los resultados 
-estadísticos de la prueba de diferencia de medias.
+
+\subsection{Efecto promedio del tratamiento}
+
+Primero estimamos el efecto medio de sign\_up mediante regresiones OLS:
+
+\begin{itemize}
+  \item Modelo Base: solo incluye la variable de tratamiento.
+  \item Modelo Completo: agrega todos los controles (tiempo, sesiones, dispositivo, sistema operativo, usuario recurrente).
+  \item Modelos con interacciones: permiten que el efecto de sign\_up varíe con las características tecnológicas y de comportamiento.
+\end{itemize}
+
+Esta tabla se encuentra al final.
+
+El efecto promedio de sign\_up resulta muy pequeño y no significativo en los modelos básicos (0.013 en el modelo base y 0.001 en el completo). Sin embargo, al incluir interacciones, el coeficiente principal se eleva (0.236–0.394) pero acompañado de efectos diferenciales. En particular, los usuarios que acceden desde dispositivo móvil o emplean el sistema Windows/Other presentan interacciones negativas y significativas, lo que atenúa el impacto general. En contraste, ser un usuario recurrente amplifica notablemente el efecto (0.167 \*\*\*). Esta heterogeneidad se refleja también en la capacidad explicativa del modelo, que aumenta de un $R^2$ cercano a 0.0 hasta aproximadamente 0.35, confirmando que las diferencias entre grupos son clave para entender la respuesta observada.
+
+
+\subsection{Heterogeneidad: Árbol Causal}
+
+Para identificar subgrupos de usuarios con efectos distintos, aplicamos un honest causal tree.
+El árbol divide la población según umbrales en time\_spent y past\_sessions, y según combinaciones de device\_type y os\_type.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/causal_tree_unpruned.jpg}
+    \caption{Árbol Causal de Efectos Heterogéneos del Registro}
+    \label{fig:arbol_causal}
+\end{figure}
+
+Principales hallazgos del árbol:
+
+\begin{itemize}
+  \item Los nodos iniciales separan a los usuarios por tiempo en sesión y número de sesiones previas, confirmando su importancia.
+  \item Se observan hojas con efectos positivos de hasta $\approx 0.4$ (usuarios con tiempo largo y varias sesiones, sobre todo en OS X) y otras con efectos negativos (usuarios móviles con pocas sesiones).
+  \item Esto sugiere que conviene focalizar el incentivo de registro en usuarios con mayor engagement y dispositivos de escritorio/OS X.
+\end{itemize}
+
+
+\subsection{Bosque Causal y CATEs}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.3\textwidth]{figures/21.png}
-
-    \includegraphics[width=0.3\textwidth]{figures/22.png}
-
-    \includegraphics[width=0.3\textwidth]{figures/23.png}
-
-    \includegraphics[width=0.3\textwidth]{figures/24.png}
-
-    \includegraphics[width=0.3\textwidth]{figures/25.png}
-
-
-    \caption{Análisis de balance entre grupos de tratamiento y control}
-    \label{fig:balance}
+    \includegraphics[width=0.3\textwidth]{figures/distribucion_efectos_heterogeneos.jpg}
+    \caption{Distribución de CATEs del Registro}
+    \label{fig:cate_distribution}
 \end{figure}
 
-\begin{table}[H]
-\ssmall
-\centering
-\caption{Balance entre grupos de control y tratamiento}
-\label{tab:balance}
-\begin{tabular}{lccc}
-\hline
-\textbf{Variable} & \textbf{Media (Control)} & \textbf{Media (Tratamiento)} & \textbf{p-valor (test)} \\ 
-\hline
-Tiempo en plataforma & 4.97 & 5.09 & 0.247 \\
-Sesiones pasadas     & 2.99 & 3.04 & 0.245 \\
-Tipo de dispositivo  & --   & --   & 0.210 (Chi$^2$) \\
-Sistema operativo    & --   & --   & 0.924 (Chi$^2$) \\
-Usuario recurrente   & --   & --   & 0.771 (Chi$^2$) \\
-\hline
-\end{tabular}
+Para robustecer los resultados usamos un causal forest (grf) con 10000 árboles, que permite estimar el efecto de tratamiento condicional (CATE) para cada observación.
 
-\hfill \break
-Prueba de balance entre grupos de control y tratamiento. 
-\end{table}
+Los CATEs confirman una distribución amplia:
+hay usuarios con efectos cercanos a cero, otros claramente positivos ($>0.3$) y un grupo minoritario con efectos negativos ($<–0.2$).
 
-Los resultados muestran que no existen diferencias estadísticamente significativas entre los grupos en las covariables observadas. Esto respalda la validez del procedimiento de asignación aleatoria, garantizando que el tratamiento y el control son comparables al inicio del experimento.
+\subsection{Visualización de patrones de heterogeneidad}
+
+A continuación mostramos algunos cruces clave:
+
+\subsection{Discusión y recomendaciones}
+
+La evidencia experimental muestra que el efecto promedio de facilitar el registro sobre el gasto es bajo y poco significativo, pero esconde una heterogeneidad marcada. Los usuarios que combinan sistema operativo OS X, dispositivo de escritorio o tablet, varias sesiones previas y tiempos prolongados en el sitio presentan CATEs claramente positivos, mientras que usuarios móviles con pocas sesiones y sistemas Windows u “other” exhiben efectos nulos o incluso negativos. En conjunto, estos resultados sugieren que una política uniforme de incentivos al registro sería ineficiente; en su lugar, conviene focalizar la intervención en los segmentos de alto potencial, donde el beneficio económico de promover el registro es más alto y más seguro.
 
 
-\subsection{Efecto sobre el registro}
-
-Con el objetivo de evaluar si una interfaz más rápida en el proceso de registro incrementa la probabilidad de que los usuarios completen exitosamente su inscripción en la plataforma,
-se estimó un modelo de regresión logística para identificar el efecto del tratamiento sobre la probabilidad de registro, los resultados se presentan en la siguiente tabla.
 
 \begin{table}[H]
+\tiny
 \centering
-\caption{Efecto del tratamiento sobre el registro}
-\label{tab:glm_signup_treatment}
-\begin{tabular}{lcc}
+\caption{Efectos del Registro en el Ingreso de CheMarket}
+\label{tab:efectos_registro}
+\begin{threeparttable}
+\begin{tabular}{lcccc}
 \toprule
- & \textbf{Coeficiente} & \textbf{Error estándar} \\ 
+ & \multicolumn{4}{c}{\textbf{Dependent variable: Log(Gasto Mensual)}} \\
+\cmidrule(lr){2-5}
+ & Modelo Base (1) & Modelo Completo (2) & Modelo Efectos Heterogéneos (1) (3) & Modelo Efectos Heterogéneos (2) (4) \\
 \midrule
-Intercepto & -3.06e-14*** & (4.35e-16) \\
-Tratamiento (easier\_signup) & 1.000*** & (6.17e-16) \\
+Tratamiento (Registro)      & 0.013 & 0.001 & 0.394** & 0.236** \\
+                            & (0.012) & (0.010) & (0.021) & (0.046) \\
+Tiempo                      & 0.048** & 0.048* & 0.048* & 0.048** \\
+                            & (0.001) & (0.001) & (0.001) & (0.001) \\
+Sesiones Pasadas            & 0.099** & 0.099* & 0.099* & 0.099** \\
+                            & (0.003) & (0.003) & (0.003) & (0.003) \\
+Dispositivo: Móvil          & -0.326** & -0.171* & -0.171** \\
+                            & (0.010) & (0.014) & (0.014) \\
+Dispositivo: Tablet         & -0.072** & -0.076* & -0.076** \\
+                            & (0.018) & (0.024) & (0.024) \\
+Sistema: Otro               & -0.186*** & -0.001 & -0.0005 \\
+                            & (0.018) & (0.025) & (0.025) \\
+Sistema: Windows            & -0.190*** & -0.021 & -0.021 \\
+                            & (0.011) & (0.015) & (0.015) \\
+Usuario Recurrente          & -0.098** & -0.095* & -0.179** \\
+                            & (0.024) & (0.024) & (0.032) \\
+Registro: Móvil             &         & -0.308** & -0.309** \\
+                            &         & (0.020) & (0.020) \\
+Registro: Tablet            &         & 0.011 & 0.011 \\
+                            &         & (0.034) & (0.034) \\
+Registro: Sistema Otro      &         & -0.372** & -0.375** \\
+                            &         & (0.035) & (0.035) \\
+Registro: Sistema Windows   &         & -0.339** & -0.340** \\
+                            &         & (0.022) & (0.022) \\
+Registro: Usuario Recurrente &        &         & 0.167*** \\
+                            &         &         & (0.043) \\
+Constante                   & 1.222** & 1.084* & 0.884* & 0.964** \\
+                            & (0.008) & (0.025) & (0.026) & (0.033) \\
 \midrule
-Observaciones & \multicolumn{2}{c}{10,000} \\
+Observations                & 10,000 & 10,000 & 10,000 & 10,000 \\
+R$^{2}$                     & 0.0001 & 0.318 & 0.352 & 0.353 \\
+Adjusted R$^{2}$            & 0.00003 & 0.317 & 0.352 & 0.352 \\
+Residual Std. Error         & 0.599 (df = 9998) & 0.495 (df = 9991) & 0.482 (df = 9987) & 0.482 (df = 9986) \\
+F Statistic                 & 1.253 (df = 1; 9998) & 581.899** (df = 8; 9991) & 452.654* (df = 12; 9987) & 419.553** (df = 13; 9986) \\
 \bottomrule
-\multicolumn{3}{l}{Errores estándar entre paréntesis.} \\
-\multicolumn{3}{l}{$*** p < 0.01, ** p < 0.05, * p < 0.1$.} \\
 \end{tabular}
-
-\hfill \break
-
-Regresión logística para estimar el efecto del tratamiento sobre la probabilidad de registro.
+\begin{tablenotes}
+\small
+\item \textit{Note}: Errores estándar en paréntesis. * p$<$0.01, ** p$<$0.05, * p$<$0.1.
+\end{tablenotes}
+\end{threeparttable}
 \end{table}
 
-Los resultados muestran que crear una interfaz de rápido acceso hace que prácticamente todos los individuos del grupo de tratamiento completaron el registro, en contraste con el grupo de control. Sin embargo, la magnitud absoluta del efecto (100\%) sugiere la presencia de separación perfecta, lo que obliga a ser prudentes en la generalización a otros contextos.
 
-
-\subsection{Efecto sobre el gasto}
-
-Con el objetivo de evaluar si una interfaz más rápida en el proceso de registro incrementa la gasten en la plataforma, se estimó un modelo de regresión para identificar el efecto del tratamiento sobre la ganancias. Los resultados se presentan en la siguiente tabla.
-
-\begin{table}[H]
-\centering
-\caption{Efecto del tratamiento sobre los ingresos}
-\begin{tabular}{lcc}
-\toprule
- & \textbf{Coeficiente} & \textbf{Error estándar} \\ 
-\midrule
-Intercepto & 3.978*** & (0.051) \\
-Tratamiento (easier\_signup) & 0.491*** & (0.073) \\
-\midrule
-Observaciones & \multicolumn{2}{c}{10,000} \\
-R-cuadrado & \multicolumn{2}{c}{0.0045} \\
-\bottomrule
-\multicolumn{3}{l}{Errores estándar entre paréntesis.} \\
-\multicolumn{3}{l}{$*** p < 0.01, ** p < 0.05, * p < 0.1$.} \\
-\end{tabular}
-\end{table}
-
-Los resultados muestran que las personas que usan una interfaz mas rapida generaron $0.49$ unidades monetarias más de ingreso que las personas con la interfaz original, sin embargo este efecto no es significativo sólo explica una pequeña parte de la variación de los ingresos por $R^2 (0.0045)$. 
-
-
-
-\subsection{Limitaciones y robustez}
-
-El experimento aleatorio proporciona evidencia clara de que la interfaz más rápida aumenta los registros y produce un incremento promedio en ingresos. Sin embargo hay problemas con la separación perfecta entre tratados y controles, lo que puede implicar que la magnitud del experimento no sea totalmente fiable. La presencia potencial de variables omitidas podría explicar la separación perfecta además de sesgar la estimación. Otra limitación del experimento es el bajo poder explicativo que tiene el experimento ya que la mayor parte de la variación en Revenue queda sin explicar, lo que sugiere heterogeneidad relevante entre usuarios y limita la capacidad del experimento para predecir resultados económicos agregados.
-
-
-
-
-\subsection{Recomendación final}
-
-
-El experimento muestra que la interfaz de registro más rápida genera un efecto positivo tanto en los ingresos como en la tasa de registros. Sin embargo, recomendamos mantener la intervención en la escala actual antes de una expansión, dado que la base de información disponible es limitada y puede ocultar factores relevantes que influyen en la relación observada, lo que introduce un riesgo de sesgo por omisión. Para reducir esa incertidumbre y mejorar la capacidad explicativa del modelo, es necesario ampliar la recolección de datos incorporando variables adicionales sobre el comportamiento de los usuarios, características de perfil, factores contextuales. de modo que el análisis econométrico pueda ofrecer estimaciones más sólidas y confiables que sustentan una decisión estratégica con mayor certeza.
-
-
-
-
-
-\section{Conclusiones}
-
-
-En conjunto, la evidencia observacional y experimental sugiere que el registro está asociado con mayores ingresos, pero el vínculo causal es débil y sensible a la especificación del modelo. Más bien, el registro parece actuar como marcador de intención de compra, impulsado por variables como el tiempo en página y el número de sesiones previas. El experimento de “registro más fácil” incrementó sustancialmente la tasa de registros y mostró un efecto promedio positivo sobre los ingresos, aunque con poder explicativo muy bajo y señales de separación perfecta que obligan a interpretar con cautela la magnitud del impacto. Recomendamos no escalar la intervención de forma masiva por ahora y mantenerla en el alcance actual mientras se corrigen limitaciones: (i) rediseñar el experimento para evitar separación, (ii) ampliar la recolección de covariables relevantes (canal de adquisición, ubicación, proxies de ingreso), y (iii) evaluar impacto económico neto con métricas de negocio (retención, costos marginales, etc). Con estos ajustes, futuros experimentos podrán ofrecer estimaciones más robustas y útiles para una decisión estratégica de escalamiento.
 
 
 \end{document}
